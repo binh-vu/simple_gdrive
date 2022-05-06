@@ -1,12 +1,14 @@
+from genericpath import exists
 import os
-from simple_gdrive.config import Config
+from pathlib import Path
+from simple_gdrive.config import Config, Scope
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 
-def auth():
+def auth(scope: Scope):
     """Authenticate with Google Drive, save the tokens to the file for future uses.
 
     The code is borrow from here: https://developers.google.com/drive/api/quickstart/python.
@@ -15,9 +17,11 @@ def auth():
     """
     creds = None
 
-    scopes = Config.SCOPES
-    token_file = os.path.join(Config.AUTH_DIR, Config.TokenFileName)
-    credential_file = os.path.join(Config.AUTH_DIR, Config.CredentialFileName)
+    scopes = [scope.value]
+    token_file = Config.get_token_file(scope)
+    credential_file = Config.get_credential_file(scope)
+
+    Path(token_file).parent.mkdir(exist_ok=True, parents=True)
 
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
