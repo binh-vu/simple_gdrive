@@ -1,9 +1,15 @@
 [tool.poetry]
 name = "simple-gdrive"
-version = "1.0.0"
+version = "1.0.1"
 description = "Simple command to help download and upload big files to Google Drive (using their official Drive APIs)"
 authors = ["Binh Vu <binh@toan2.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/binh-vu/simple_gdrive"
+repository = "https://github.com/binh-vu/simple_gdrive"
+
+[tool.poetry.scripts]
+gdrive = 'simple_gdrive.cli:cli'
 
 [tool.poetry.dependencies]
 python = "^3.8"
