@@ -26,3 +26,13 @@ Upload a file
 ```bash
 gdrive upload -s <file path in disk> -d <path in drive>
 ```
+
+For example:
+
+```bash
+gdrive download -s //KGData/Wikipedia/20220420/enwiki-NS0-20220420-ENTERPRISE-HTML.json.tar.gz -d enwiki.json.tar.gz
+```
+
+```bash
+gdrive upload -s ./enwiki-NS0-20220420-ENTERPRISE-HTML.json.tar.gz -d //KGData/Wikipedia/20220420/enwiki-NS0-20220420-ENTERPRISE-HTML.json.tar.gz
+```
