@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simple-gdrive"
-version = "1.1.0"
+version = "1.1.1"
 description = "Simple command to help download and upload big files to Google Drive (using their official Drive APIs)"
 authors = ["Binh Vu <binh@toan2.com>"]
 license = "MIT"

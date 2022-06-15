@@ -22,6 +22,10 @@ class GPath:
         if path.endswith("/"):
             path = path[:-1]
 
+        assert path.startswith(
+            "/"
+        ), f"Invalid path: {path}. Should starts with `/` (your drive) or `//<shared_drive_name>` (a shared drive)"
+
         if path.startswith("//"):
             path = path[2:]
             if path.find("/") == -1:
@@ -32,7 +36,7 @@ class GPath:
                 paths = path.split("/")
         else:
             drive_name = None
-            paths = path.split("/")
+            paths = path[1:].split("/")
         return GPath(paths, drive_name)
 
     def get_id(self, service) -> Optional[GFileId]:
