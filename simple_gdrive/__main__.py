@@ -29,21 +29,38 @@ def download(source: str, fileid: str, dest: str, permission: str):
     if os.path.exists(source):
         pass
 
-    if fileid.strip() != "":
-        fileId = fileid
-    else:
+    fileid = fileid.strip()
+    if fileid == "":
         if source.strip() == "":
             raise Exception("source or file id is required")
-        fileId = GPath.from_str(source).get_id(service)
+        gfile = GPath.from_str(source).get_id(service)
+        assert gfile is not None, f"{source} is not found"
+        fileid = gfile.id
+        filename = gfile.name
 
-    req = service.files().get_media(fileId=fileId)
-    with open(dest, "wb") as fh:
+        if dest is None:
+            dest = "./" + filename
+            if os.path.exists(dest):
+                raise Exception(f"destination {dest} already exists")
+    else:
+        if dest is None:
+            raise Exception("destination is required")
+
+    req = service.files().get_media(fileId=fileid)
+
+    with open(dest, "wb") as fh, tqdm(total=100, desc="Download") as pbar:
         try:
             downloader = MediaIoBaseDownload(fh, req)
             done = False
+            progress = 0
             while done is False:
                 status, done = downloader.next_chunk()
-                print("Download %d%%.\r" % int(status.progress() * 100), end="")
+                curr_progress = int(status.progress() * 100 * 1000) / 1000
+                pbar.update(curr_progress - progress)
+                progress = curr_progress
+
+            # just in case it is not exactly 100%
+            pbar.update(100 - progress)
         except HttpError as error:
             logger.exception(error)
 
@@ -83,10 +100,18 @@ def upload(source: str, dest: str, mimetype: str, permission: str):
     )
     resp = None
     media.stream()
-    while resp is None:
-        status, resp = req.next_chunk()
-        if status:
-            print("Uploaded %d%%.\r" % int(status.progress() * 100), end="", flush=True)
+
+    with tqdm(total=100, desc="Upload") as pbar:
+        progress = 0
+        while resp is None:
+            status, resp = req.next_chunk()
+            if status:
+                curr_progress = int(status.progress() * 100 * 1000) / 1000
+                pbar.update(curr_progress - progress)
+                progress = curr_progress
+
+        # just in case it is not exactly 100%
+        pbar.update(100 - progress)
 
     logger.info(
         "\nUpload file {} to {} successfully.\nThe file is located at is: {}",

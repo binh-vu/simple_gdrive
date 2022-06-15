@@ -5,6 +5,12 @@ from dataclasses import dataclass
 
 
 @dataclass
+class GFileId:
+    id: str
+    name: str
+
+
+@dataclass
 class GPath:
     """Path of an item (file or folder) in Google Drive"""
 
@@ -29,7 +35,7 @@ class GPath:
             paths = path.split("/")
         return GPath(paths, drive_name)
 
-    def get_id(self, service) -> Optional[str]:
+    def get_id(self, service) -> Optional[GFileId]:
         """Get id of the folder or file in a drive.
 
         Args:
@@ -47,17 +53,19 @@ class GPath:
                 "supportsAllDrives": True,
             }
             parent = drive_id
+            filename = self.drive_name
         else:
             args = {
                 "corpora": "user",
             }
             parent = "root"
+            filename = "user"
 
         if len(self.paths) == 0:
             if self.drive_name is None:
                 return None
             else:
-                return parent
+                return GFileId(id=parent, name=filename)
 
         for name in self.paths:
             resp = files.list(
@@ -69,8 +77,9 @@ class GPath:
 
             file = resp.get("files")[0]
             parent = file["id"]
+            filename = file["name"]
 
-        return parent
+        return GFileId(id=parent, name=filename)
 
     def get_drive_id(self, service):
         resp = service.drives().list().execute()
