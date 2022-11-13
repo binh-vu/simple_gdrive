@@ -1,24 +1,27 @@
-name: ci
-
+name: CI
 on:
   push:
   pull_request:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        python: ["3.7", "3.8", "3.9", "3.10"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: setup python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python }}
       - name: setup dependencies
         run: |
           pip install poetry
-          # poetry install
-      # - name: run test
-      #   run: poetry run pytest -x
+          poetry lock --no-update
+          poetry install
+      - name: run test
+        run: poetry run pytest -xs tests/
       - name: build wheels
         run: poetry build
       - name: upload wheels
@@ -36,7 +39,7 @@ jobs:
           name: wheels
           path: dist
       - name: setup python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
       - name: pypi publish
