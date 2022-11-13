@@ -36,3 +36,5 @@ gdrive download -s //KGData/Wikipedia/20220420/enwiki-NS0-20220420-ENTERPRISE-HT
 ```bash
 gdrive upload -s ./enwiki-NS0-20220420-ENTERPRISE-HTML.json.tar.gz -d //KGData/Wikipedia/20220420/enwiki-NS0-20220420-ENTERPRISE-HTML.json.tar.gz
 ```
+
+If the path in Google drive startswith `/`, the top folder/file will be in your drive (e.g., `/abc` points to the folder `abc` in your drive). If it starts with `//`, the first level will be the name of the shared drive and the second level will be the folder/file in the shared drive (e.g., `//KGData/abc` points to the folder `abc` in KGData shared drive).
